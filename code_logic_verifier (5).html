@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code-Logic Verifier - Triết học Chủ thể tự chủ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#030712',
+                            900: '#0b0f19',
+                            800: '#111827',
+                            700: '#1f2937',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        code, pre, input, textarea {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+
+    <header class="border-b border-slate-800 bg-dark-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-dark-950 font-bold text-xl shadow-lg shadow-emerald-500/20">
+                &lt;/&gt;
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-slate-100 tracking-wide flex items-center gap-2">
+                    Code-Logic Verifier
+                    <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Chủ thể tự chủ</span>
+                </h1>
+                <p class="text-xs text-slate-400">Nền tảng thực chứng nhận thức chống lệ thuộc AI trong lập trình</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 text-xs text-slate-400 bg-dark-800 px-3 py-1.5 rounded-lg border border-slate-700/60">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Masking Engine Active</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-6">
+
+        <section id="screen-input" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Panel: Problem info & Templates -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-semibold text-slate-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Tiêu đề & Đề bài Thách thức
+                        </h2>
+                        <!-- Quick Template Selector -->
+                        <div class="relative">
+                            <select id="template-select" onchange="loadTemplate(this.value)" class="text-xs bg-dark-800 border border-slate-700 text-emerald-400 rounded-lg px-3 py-1.5 focus:outline-none focus:border-emerald-500 transition cursor-pointer">
+                                <option value="" disabled selected>⚡ Chọn bài tập mẫu cơ bản...</option>
+                                <option value="even_odd">1. Tính tổng chẵn lẻ nâng cao</option>
+                                <option value="prime">2. Kiểm tra số nguyên tố</option>
+                                <option value="max3">3. Tìm số lớn nhất trong 3 số</option>
+                                <option value="factorial">4. Tính giai thừa (Vòng lặp for)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Tiêu đề bài toán</label>
+                        <input type="text" id="problem-title-input" placeholder="Ví dụ: Kiểm tra số nguyên tố..." class="w-full bg-dark-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Mô tả yêu cầu bài toán</label>
+                        <textarea id="problem-desc" rows="6" placeholder="Mô tả chi tiết yêu cầu thuật toán, điều kiện ràng buộc..." class="w-full bg-dark-950 border border-slate-700/80 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition resize-none"></textarea>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="loadDefaultTemplate()" class="w-full py-2 px-4 rounded-xl bg-dark-800 hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            Tải nhanh mẫu mặc định (Tính tổng chẵn lẻ)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Source Code Editor -->
+            <div class="lg:col-span-7 flex flex-col justify-between">
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-3">
+                        <h2 class="font-semibold text-slate-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            Mã nguồn C/C++ Hoàn chỉnh (Source Code)
+                        </h2>
+                        <span class="text-xs text-slate-400 font-mono">C99 / C++11 Standard</span>
+                    </div>
+
+                    <div class="flex-grow relative mb-6">
+                        <textarea id="source-code" rows="16" placeholder="// Dán mã nguồn C/C++ hoàn chỉnh tại đây hoặc chọn mẫu ở trên..." class="w-full h-full bg-dark-950 border border-slate-700/80 rounded-xl p-4 text-xs md:text-sm text-emerald-400 focus:outline-none focus:border-cyan-500 transition leading-relaxed resize-none"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+                        <div class="text-xs text-slate-400 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            <span>Bảo toàn <code>int main()</code> & biến ngoài. Đục thủng trọn gói khối điều khiển.</span>
+                        </div>
+                        <button onclick="generateChallenge()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-emerald-600/20 transition transform active:scale-95 flex items-center gap-2 text-sm">
+                            Khởi Tạo Thách Thức Thực Chứng
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="screen-challenge" class="hidden grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Column: Problem Statement & Masked Code -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Problem Statement Card -->
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Đề bài thách thức</span>
+                        <h3 id="display-problem-title" class="text-base font-bold text-slate-100"></h3>
+                    </div>
+                    <p id="display-problem-desc" class="text-sm text-slate-300 leading-relaxed bg-dark-950 p-4 rounded-xl border border-slate-800/80 whitespace-pre-line"></p>
+                </div>
+
+                <!-- Masked Code Board -->
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h2 class="font-semibold text-slate-200 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            Bảng Tái Tạo Logic Mã Nguồn (Hãy điền vào các ô trống bị đục lỗ)
+                        </h2>
+                        <span id="block-count-badge" class="text-xs px-2.5 py-1 rounded-lg bg-dark-800 text-slate-300 border border-slate-700 font-mono">0 khối bị đục</span>
+                    </div>
+
+                    <!-- Code Container -->
+                    <div class="bg-dark-950 border border-slate-800 rounded-xl p-5 overflow-x-auto shadow-inner">
+                        <pre id="masked-code-container" class="text-xs md:text-sm text-slate-200 leading-relaxed font-mono whitespace-pre-wrap"></pre>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button onclick="resetInputs()" class="px-4 py-2.5 rounded-xl bg-dark-800 hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                            Xóa Nhập Liệu
+                        </button>
+                        <div class="flex items-center gap-3">
+                            <button onclick="backToEditor()" class="px-4 py-2.5 rounded-xl bg-dark-800 hover:bg-slate-800 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                                Quay Lại Sửa Đề
+                            </button>
+                            <button onclick="verifyChallenge()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-600/20 transition transform active:scale-95 flex items-center gap-2 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Xác Thực Thách Thức
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Status & Philosophical Feedback -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-dark-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 sticky top-24">
+                    <h3 class="font-semibold text-slate-200 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        Phản Hồi Triết Học & Trạng Thái
+                    </h3>
+                    
+                    <div id="feedback-box" class="p-4 rounded-xl bg-dark-950 border border-slate-800 text-xs text-slate-300 leading-relaxed space-y-2">
+                        <p class="text-slate-400">Hệ thống đang chờ bạn hoàn thành các khối logic...</p>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-900/40 space-y-2">
+                        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Cảnh Báo Lệ Thuộc AI
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Sự phụ thuộc vào AI trong lập trình làm xói mòn khả năng giải quyết vấn đề cấp thấp và tư duy logic trừu tượng. Việc chủ thể tự mình cấu trúc lại từng dòng lệnh là phương thức duy nhất để chiếm lĩnh tri thức đích thực.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800 bg-dark-900/80 backdrop-blur py-4 px-6 text-center text-xs text-slate-400">
+        Tác giả: Tạ Đức Phương &nbsp;|&nbsp; MSSV: 102260077 &nbsp;|&nbsp; Lớp: 26T_KHDL &nbsp;|&nbsp; Bài tập lớn Triết học Mác - Lênin
+    </footer>
+
+    <script>
+        // Pre-made templates library for beginners
+        const templates = {
+            even_odd: {
+                title: "Thuật toán tính tổng chẵn lẻ nâng cao",
+                desc: "Viết chương trình C/C++ nhập vào số nguyên n từ bàn phím. Sử dụng cấu trúc điều khiển rẽ nhánh kiểm tra tính hợp lệ, dùng vòng lặp for duyệt từ 1 đến n, phân loại số chẵn cộng vào tổng, số lẻ nhân đôi rồi cộng dồn, sau đó xuất kết quả tổng.",
+                code: `#include <stdio.h>
+
+int main() {
+    int n, sum = 0;
+    printf("Nhap vao so nguyen n: ");
+    scanf("%d", &n);
+
+    if (n > 0) {
+        for (int i = 1; i <= n; i++) {
+            if (i % 2 == 0) {
+                sum += i;
+            } else {
+                sum += (i * 2);
+            }
+        }
+    }
+    printf("Ket qua tong la: %d\\n", sum);
+    return 0;
+}`
+            },
+            prime: {
+                title: "Kiểm tra số nguyên tố",
+                desc: "Viết chương trình C/C++ nhập vào một số nguyên dương n. Sử dụng cấu trúc điều khiển rẽ nhánh và vòng lặp for để kiểm tra xem n có phải là số nguyên tố hay không và in ra thông báo tương ứng.",
+                code: `#include <stdio.h>
+
+int main() {
+    int n, i, count = 0;
+    printf("Nhap vao so nguyen n: ");
+    scanf("%d", &n);
+
+    if (n > 1) {
+        for (i = 2; i * i <= n; i++) {
+            if (n % i == 0) {
+                count++;
+            }
+        }
+    }
+
+    if (count == 0 && n > 1) {
+        printf("%d la so nguyen to\\n", n);
+    } else {
+        printf("%d khong phai la so nguyen to\\n", n);
+    }
+
+    return 0;
+}`
+            },
+            max3: {
+                title: "Tìm số lớn nhất trong 3 số nguyên",
+                desc: "Viết chương trình C/C++ nhập vào 3 số nguyên a, b, c từ bàn phím. Sử dụng cấu trúc rẽ nhánh if-else lồng nhau để tìm và in ra giá trị lớn nhất trong ba số.",
+                code: `#include <stdio.h>
+
+int main() {
+    int a, b, c, max;
+    printf("Nhap vao 3 so a, b, c: ");
+    scanf("%d %d %d", &a, &b, &c);
+
+    max = a;
+
+    if (b > max) {
+        max = b;
+    } else {
+        if (c > max) {
+            max = c;
+        }
+    }
+
+    printf("Gia tri lon nhat la: %d\\n", max);
+    return 0;
+}`
+            },
+            factorial: {
+                title: "Tính giai thừa của n",
+                desc: "Viết chương trình C/C++ nhập vào số nguyên không âm n. Sử dụng vòng lặp for để tính tích giai thừa n! và xuất kết quả ra màn hình.",
+                code: `#include <stdio.h>
+
+int main() {
+    int n;
+    long long fact = 1;
+    printf("Nhap vao n: ");
+    scanf("%d", &n);
+
+    if (n >= 0) {
+        for (int i = 1; i <= n; i++) {
+            fact *= i;
+        }
+    }
+
+    printf("Giai thua la: %lld\\n", fact);
+    return 0;
+}`
+            }
+        };
+
+        function loadDefaultTemplate() {
+            loadTemplate('even_odd');
+            document.getElementById('template-select').value = 'even_odd';
+        }
+
+        function loadTemplate(key) {
+            const t = templates[key];
+            if (!t) return;
+            document.getElementById('problem-title-input').value = t.title;
+            document.getElementById('problem-desc').value = t.desc;
+            document.getElementById('source-code').value = t.code;
+        }
+
+        // Leave inputs empty on load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Empty initialization
+        });
+
+        let currentMaskedBlocks = [];
+
+        function backToEditor() {
+            document.getElementById('screen-challenge').classList.add('hidden');
+            document.getElementById('screen-challenge').classList.remove('grid');
+            document.getElementById('screen-input').classList.remove('hidden');
+            document.getElementById('screen-input').classList.add('grid');
+        }
+
+        // Auto-resize textarea function
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+        }
+
+        // Masking Engine Algorithm
+        function generateChallenge() {
+            const titleInput = document.getElementById('problem-title-input').value.trim();
+            const descInput = document.getElementById('problem-desc').value.trim();
+            const code = document.getElementById('source-code').value;
+
+            if (!code) {
+                alert("Vui lòng nhập mã nguồn C/C++ hoàn chỉnh trước khi khởi tạo thách thức!");
+                return;
+            }
+
+            // Assign default values if title or description are empty
+            const title = titleInput !== "" ? titleInput : "Thách Thức Lập Trình Tự Chủ";
+            const desc = descInput !== "" ? descInput : "Mô tả yêu cầu thuật toán do người dùng tự thiết lập và kiểm chứng thực tế.";
+
+            document.getElementById('display-problem-title').innerText = title;
+            document.getElementById('display-problem-desc').innerText = desc;
+
+            // Process code masking: find control structures (for, while, if, else if, else, switch) and mask block
+            currentMaskedBlocks = [];
+            const maskedHtml = maskCodeBlocks(code);
+
+            document.getElementById('masked-code-container').innerHTML = maskedHtml;
+            document.getElementById('block-count-badge').innerText = `${currentMaskedBlocks.length} khối bị đục`;
+
+            // Initialize textarea heights after rendering
+            setTimeout(() => {
+                document.querySelectorAll('#masked-code-container textarea').forEach(ta => {
+                    autoResize(ta);
+                });
+            }, 50);
+
+            document.getElementById('screen-input').classList.add('hidden');
+            document.getElementById('screen-input').classList.remove('grid');
+            document.getElementById('screen-challenge').classList.remove('hidden');
+            document.getElementById('screen-challenge').classList.add('grid');
+
+            document.getElementById('feedback-box').innerHTML = `
+                <p class="text-emerald-400 font-medium">Hệ thống đã đục thủng <strong>${currentMaskedBlocks.length}</strong> khối cấu trúc điều khiển.</p>
+                <p class="text-slate-300">Hãy tự điền mã nguồn logic vào các ô trống (có thể nhấn Enter xuống dòng, ô sẽ tự dãn ra) và bấm <strong>Xác Thực Thách Thức</strong>.</p>
+            `;
+        }
+
+        function maskCodeBlocks(source) {
+            let result = '';
+            let i = 0;
+            let blockId = 0;
+
+            // Helper to find matching closing brace
+            function findMatchingBrace(str, startIndex) {
+                let depth = 0;
+                let foundOpen = false;
+                for (let idx = startIndex; idx < str.length; idx++) {
+                    if (str[idx] === '{') {
+                        depth++;
+                        foundOpen = true;
+                    } else if (str[idx] === '}') {
+                        depth--;
+                        if (foundOpen && depth === 0) {
+                            return idx;
+                        }
+                    }
+                }
+                return -1;
+            }
+
+            while (i < source.length) {
+                let matchKeyword = null;
+                let keywords = ['else if', 'for', 'while', 'if', 'else', 'switch'];
+                
+                let remaining = source.slice(i);
+                for (let kw of keywords) {
+                    let regex = new RegExp(`^\\b${kw}\\b`);
+                    if (regex.test(remaining)) {
+                        matchKeyword = kw;
+                        break;
+                    }
+                }
+
+                if (matchKeyword) {
+                    let braceIdx = source.indexOf('{', i);
+                    if (braceIdx !== -1) {
+                        let closeIdx = findMatchingBrace(source, braceIdx);
+                        if (closeIdx !== -1) {
+                            let fullBlock = source.slice(i, closeIdx + 1);
+                            
+                            currentMaskedBlocks.push({
+                                id: blockId,
+                                expected: fullBlock
+                            });
+
+                            let approxChars = Math.min(Math.max(fullBlock.length, 30), 80);
+                            result += `<textarea rows="1" data-block-id="${blockId}" placeholder="[ Gõ lại toàn bộ khối ${matchKeyword} ... ]" oninput="autoResize(this)" class="my-1 px-3 py-1.5 bg-dark-900 border border-slate-700 rounded-lg text-emerald-400 text-xs md:text-sm focus:outline-none focus:border-emerald-500 transition shadow-inner resize-none inline-block align-middle" style="width: ${Math.max(approxChars * 7.5, 200)}px; max-width: 100%; overflow-hidden;"></textarea>`;
+                            
+                            blockId++;
+                            i = closeIdx + 1;
+                            continue;
+                        }
+                    }
+                }
+
+                result += escapeHtml(source[i]);
+                i++;
+            }
+
+            return result;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function resetInputs() {
+            const inputs = document.querySelectorAll('#masked-code-container textarea');
+            inputs.forEach(inp => {
+                inp.value = '';
+                inp.className = "my-1 px-3 py-1.5 bg-dark-900 border border-slate-700 rounded-lg text-emerald-400 text-xs md:text-sm focus:outline-none focus:border-emerald-500 transition shadow-inner resize-none inline-block align-middle";
+                autoResize(inp);
+            });
+            document.getElementById('feedback-box').innerHTML = `
+                <p class="text-slate-400">Đã làm mới các ô nhập liệu. Hãy tiếp tục thử thách...</p>
+            `;
+        }
+
+        // Verification Mechanism with whitespace-agnostic comparison (.replace(/\s+/g, ''))
+        function verifyChallenge() {
+            const inputs = document.querySelectorAll('#masked-code-container textarea');
+            let allCorrect = true;
+            let checkedCount = 0;
+
+            inputs.forEach(inp => {
+                const id = parseInt(inp.getAttribute('data-block-id'));
+                const blockObj = currentMaskedBlocks.find(b => b.id === id);
+                if (!blockObj) return;
+
+                checkedCount++;
+                const userVal = inp.value;
+                const expectedVal = blockObj.expected;
+
+                const normUser = userVal.replace(/\s+/g, '');
+                const normExpected = expectedVal.replace(/\s+/g, '');
+
+                if (normUser === normExpected && normUser !== "") {
+                    inp.className = "my-1 px-3 py-1.5 bg-emerald-950/30 border border-emerald-500 rounded-lg text-emerald-300 text-xs md:text-sm focus:outline-none shadow-inner transition resize-none inline-block align-middle";
+                } else {
+                    allCorrect = false;
+                    inp.className = "my-1 px-3 py-1.5 bg-rose-950/30 border border-rose-500 rounded-lg text-rose-300 text-xs md:text-sm focus:outline-none shadow-inner transition resize-none inline-block align-middle";
+                }
+            });
+
+            const feedbackBox = document.getElementById('feedback-box');
+            if (checkedCount === 0) {
+                feedbackBox.innerHTML = `<p class="text-amber-400">Không có khối logic nào trong mã nguồn để xác thực.</p>`;
+                return;
+            }
+
+            if (allCorrect) {
+                feedbackBox.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-emerald-400 font-bold flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="stroke: currentColor;" d="M5 13l4 4L19 7"></path></svg>
+                            Xác Thực Thành Công (100% Chính Xác)!
+                        </p>
+                        <p class="text-slate-300">Tuyệt vời! Bạn đã tái tạo hoàn hảo cấu trúc logic bằng tư duy tự chủ của chính mình, vượt qua sự tha hóa do lệ thuộc AI.</p>
+                    </div>
+                `;
+            } else {
+                feedbackBox.innerHTML = `
+                    <div class="space-y-2">
+                        <p class="text-rose-400 font-bold flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" style="stroke: currentColor;" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Phát Hiện Sai Lệch Logic!
+                        </p>
+                        <p class="text-slate-300">Các ô viền đỏ có cú pháp hoặc logic chưa khớp chính xác với mã gốc. Hãy kiểm tra lại từng dấu ngoặc nhọn, biểu thức điều kiện và biến số.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
