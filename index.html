@@ -72,9 +72,9 @@
         </div>
     </header>
 
-    <!-- Main Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-6">
 
+        <!-- SCREEN 1: Input & Templates -->
         <section id="screen-input" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left Panel: Problem info & Templates -->
             <div class="lg:col-span-5 space-y-6">
@@ -127,7 +127,7 @@
                     </div>
 
                     <div class="flex-grow relative mb-6">
-                        <textarea id="source-code" rows="16" placeholder="// Dán mã nguồn C/C++ hoàn chỉnh tại đây hoặc chọn mẫu ở trên..." class="w-full h-full bg-dark-950 border border-slate-700/80 rounded-xl p-4 text-xs md:text-sm text-emerald-400 focus:outline-none focus:border-cyan-500 transition leading-relaxed resize-none"></textarea>
+                        <textarea id="source-code" rows="16" placeholder="// Dán hoặc tự nhập mã nguồn C/C++ hoàn chỉnh tại đây..." class="w-full h-full bg-dark-950 border border-slate-700/80 rounded-xl p-4 text-xs md:text-sm text-emerald-400 focus:outline-none focus:border-cyan-500 transition leading-relaxed resize-none"></textarea>
                     </div>
 
                     <div class="flex items-center justify-between pt-2 border-t border-slate-800">
@@ -144,6 +144,7 @@
             </div>
         </section>
 
+        <!-- SCREEN 2: Challenge Verification -->
         <section id="screen-challenge" class="hidden grid-cols-1 lg:grid-cols-12 gap-6">
             <!-- Left Column: Problem Statement & Masked Code -->
             <div class="lg:col-span-8 space-y-6">
@@ -221,7 +222,6 @@
     </footer>
 
     <script>
-        // Pre-made templates library for beginners
         const templates = {
             even_odd: {
                 title: "Thuật toán tính tổng chẵn lẻ nâng cao",
@@ -333,9 +333,12 @@ int main() {
             document.getElementById('source-code').value = t.code;
         }
 
-        // Leave inputs empty on load
         window.addEventListener('DOMContentLoaded', () => {
-            // Empty initialization
+            document.getElementById('problem-title-input').value = "";
+            document.getElementById('problem-desc').value = "";
+            document.getElementById('source-code').value = "";
+            const selectEl = document.getElementById('template-select');
+            if (selectEl) selectEl.selectedIndex = 0;
         });
 
         let currentMaskedBlocks = [];
@@ -347,13 +350,11 @@ int main() {
             document.getElementById('screen-input').classList.add('grid');
         }
 
-        // Auto-resize textarea function
         function autoResize(textarea) {
             textarea.style.height = 'auto';
             textarea.style.height = (textarea.scrollHeight + 2) + 'px';
         }
 
-        // Masking Engine Algorithm
         function generateChallenge() {
             const titleInput = document.getElementById('problem-title-input').value.trim();
             const descInput = document.getElementById('problem-desc').value.trim();
@@ -364,21 +365,18 @@ int main() {
                 return;
             }
 
-            // Assign default values if title or description are empty
             const title = titleInput !== "" ? titleInput : "Thách Thức Lập Trình Tự Chủ";
             const desc = descInput !== "" ? descInput : "Mô tả yêu cầu thuật toán do người dùng tự thiết lập và kiểm chứng thực tế.";
 
             document.getElementById('display-problem-title').innerText = title;
             document.getElementById('display-problem-desc').innerText = desc;
 
-            // Process code masking: find control structures (for, while, if, else if, else, switch) and mask block
             currentMaskedBlocks = [];
             const maskedHtml = maskCodeBlocks(code);
 
             document.getElementById('masked-code-container').innerHTML = maskedHtml;
             document.getElementById('block-count-badge').innerText = `${currentMaskedBlocks.length} khối bị đục`;
 
-            // Initialize textarea heights after rendering
             setTimeout(() => {
                 document.querySelectorAll('#masked-code-container textarea').forEach(ta => {
                     autoResize(ta);
@@ -401,7 +399,6 @@ int main() {
             let i = 0;
             let blockId = 0;
 
-            // Helper to find matching closing brace
             function findMatchingBrace(str, startIndex) {
                 let depth = 0;
                 let foundOpen = false;
@@ -477,7 +474,6 @@ int main() {
             `;
         }
 
-        // Verification Mechanism with whitespace-agnostic comparison (.replace(/\s+/g, ''))
         function verifyChallenge() {
             const inputs = document.querySelectorAll('#masked-code-container textarea');
             let allCorrect = true;
